@@ -64,7 +64,7 @@ export default function UploadButton({ fetchFiles }: UploadButtonProps) {
 
   // Upload file to Supabase
   const uploadToSupabase = async (uploadFile: Blob) => {
-    const fileName = uploadFile.name;
+    const fileName = uploadFile;
 
     const { data, error } = await supabase.storage
       .from("storage")
