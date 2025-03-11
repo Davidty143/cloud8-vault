@@ -1,6 +1,4 @@
 "use client";
-import LoginButton from "@/components/LoginLogoutButton";
-import UserGreetText from "@/components/UserGreetText";
 import Image from "next/image";
 import Link from "next/link"; // Import Link from next/link
 
