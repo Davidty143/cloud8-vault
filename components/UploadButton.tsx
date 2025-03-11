@@ -54,7 +54,7 @@ export default function UploadButton({ fetchFiles }: UploadButtonProps) {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
-      setFile(selectedFile);
+      setFile(selectedFile); // File object that contains `name`, `size`, `type`
     }
   };
 
