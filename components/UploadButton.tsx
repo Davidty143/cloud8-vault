@@ -70,7 +70,11 @@ export default function UploadButton({ fetchFiles }: UploadButtonProps) {
       new Compressor(file, {
         quality: 0.6,
         success: async (result) => {
-          const filePath = await uploadToSupabase(result); // Upload compressed image and get the file path
+          // Cast the result to a File object to ensure it has the 'name' property
+          const uploadFile = result as File; // Typecast 'result' to File
+
+          const fileName = uploadFile.name.replace(/\s+/g, "_"); // Clean the file name by replacing spaces with underscores
+          const filePath = await uploadToSupabase(uploadFile); // Upload compressed image and get the file path
           if (filePath) {
             await saveProfileInfo(filePath); // Save profile information including file path
           }
@@ -85,7 +89,7 @@ export default function UploadButton({ fetchFiles }: UploadButtonProps) {
   };
 
   // Upload file to Supabase and return the file path (not the full URL)
-  const uploadToSupabase = async (uploadFile: Blob) => {
+  const uploadToSupabase = async (uploadFile: File) => {
     console.log("Uploading file to Supabase...");
 
     const fileName = uploadFile.name.replace(/\s+/g, "_"); // Clean the file name by replacing spaces with underscores
