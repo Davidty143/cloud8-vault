@@ -1,5 +1,6 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
+import Compressor from "compressorjs"; // Import the Compressor library
 import { createClient } from "@supabase/supabase-js";
 
 // Initialize Supabase client using environment variables
@@ -58,21 +59,33 @@ export default function UploadButton({ fetchFiles }: UploadButtonProps) {
     }
   };
 
-  // Handle file upload directly without compression
+  // Handle file upload with compression (only images)
   const handleUploadClick = async () => {
     if (!file) {
       alert("Please select a file to upload!");
       return;
     }
 
-    const filePath = await uploadToSupabase(file); // Upload the selected file directly and get the file path
-    if (filePath) {
-      await saveProfileInfo(filePath); // Save profile information including file path
+    if (file.type.startsWith("image/")) {
+      new Compressor(file, {
+        quality: 0.6,
+        success: async (result) => {
+          const filePath = await uploadToSupabase(result); // Upload compressed image and get the file path
+          if (filePath) {
+            await saveProfileInfo(filePath); // Save profile information including file path
+          }
+        },
+        error: (err) => {
+          console.error("Compression failed:", err);
+        },
+      });
+    } else {
+      alert("Please select a valid image file.");
     }
   };
 
   // Upload file to Supabase and return the file path (not the full URL)
-  const uploadToSupabase = async (uploadFile: File) => {
+  const uploadToSupabase = async (uploadFile: Blob) => {
     console.log("Uploading file to Supabase...");
 
     const fileName = uploadFile.name.replace(/\s+/g, "_"); // Clean the file name by replacing spaces with underscores
@@ -162,7 +175,9 @@ export default function UploadButton({ fetchFiles }: UploadButtonProps) {
         country,
         photo_url: filePath, // Save the file path instead of the full URL
       },
-      { onConflict: ["email"] } // To update profile info based on email (unique key)
+      {
+        onConflict: "email", // Conflict on the 'email' column (not array of strings)
+      }
     );
 
     if (error) {
