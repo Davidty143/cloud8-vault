@@ -85,7 +85,7 @@ export default function UploadButton({ fetchFiles }: UploadButtonProps) {
   };
 
   // Upload file to Supabase and return the file path (not the full URL)
-  const uploadToSupabase = async (uploadFile: Blob) => {
+  const uploadToSupabase = async (uploadFile: File) => {
     console.log("Uploading file to Supabase...");
 
     const fileName = uploadFile.name.replace(/\s+/g, "_"); // Clean the file name by replacing spaces with underscores
@@ -274,9 +274,9 @@ export default function UploadButton({ fetchFiles }: UploadButtonProps) {
               <option value="Australia">Australia</option>
               <option value="United Kingdom">United Kingdom</option>
               <option value="Germany">Germany</option>
-              <option value="Germany">Singapore</option>
-              <option value="Germany">indonesia</option>
-              <option value="Germany">Thailand</option>
+              <option value="Singapore">Singapore</option>
+              <option value="Indonesia">Indonesia</option>
+              <option value="Thailand">Thailand</option>
             </select>
 
             {/* Upload Photo Section */}
