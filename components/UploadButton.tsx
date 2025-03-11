@@ -70,7 +70,7 @@ export default function UploadButton({ fetchFiles }: UploadButtonProps) {
       new Compressor(file, {
         quality: 0.6,
         success: async (result) => {
-          // Convert the compressed Blob back to a File
+          // Ensure we create a File object from the Blob
           const compressedFile = new File([result], file.name, {
             type: file.type,
           });
