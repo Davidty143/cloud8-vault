@@ -75,7 +75,10 @@ export default function UploadButton({ fetchFiles }: UploadButtonProps) {
   const uploadToSupabase = async (uploadFile: File) => {
     console.log("Uploading file to Supabase...");
 
-    const fileName = uploadFile.name.replace(/\s+/g, "_"); // Clean the file name by replacing spaces with underscores
+    const fileName = uploadFile.name
+      .replace(/\s+/g, "_") // Replace spaces with underscores
+      .replace(/[^\w.-]+/g, "") // Remove non-alphanumeric characters except periods (.)
+      .toLowerCase(); // Optionally, convert to lowercase to avoid case issues
 
     setLoading(true); // Set loading to true while uploading
 
