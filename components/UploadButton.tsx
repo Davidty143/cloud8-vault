@@ -1,6 +1,5 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import Compressor from "compressorjs"; // Import the Compressor library
 import { createClient } from "@supabase/supabase-js";
 
 // Initialize Supabase client using environment variables
@@ -59,33 +58,16 @@ export default function UploadButton({ fetchFiles }: UploadButtonProps) {
     }
   };
 
-  // Handle file upload with compression (only images)
+  // Handle file upload directly without compression
   const handleUploadClick = async () => {
     if (!file) {
       alert("Please select a file to upload!");
       return;
     }
 
-    if (file.type.startsWith("image/")) {
-      new Compressor(file, {
-        quality: 0.6,
-        success: async (result) => {
-          // Ensure we create a File object from the Blob
-          const compressedFile = new File([result], file.name, {
-            type: file.type,
-          });
-
-          const filePath = await uploadToSupabase(compressedFile); // Upload compressed image and get the file path
-          if (filePath) {
-            await saveProfileInfo(filePath); // Save profile information including file path
-          }
-        },
-        error: (err) => {
-          console.error("Compression failed:", err);
-        },
-      });
-    } else {
-      alert("Please select a valid image file.");
+    const filePath = await uploadToSupabase(file); // Upload the selected file directly and get the file path
+    if (filePath) {
+      await saveProfileInfo(filePath); // Save profile information including file path
     }
   };
 
