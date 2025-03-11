@@ -70,7 +70,12 @@ export default function UploadButton({ fetchFiles }: UploadButtonProps) {
       new Compressor(file, {
         quality: 0.6,
         success: async (result) => {
-          const filePath = await uploadToSupabase(result); // Upload compressed image and get the file path
+          // Convert the compressed Blob back to a File
+          const compressedFile = new File([result], file.name, {
+            type: file.type,
+          });
+
+          const filePath = await uploadToSupabase(compressedFile); // Upload compressed image and get the file path
           if (filePath) {
             await saveProfileInfo(filePath); // Save profile information including file path
           }
