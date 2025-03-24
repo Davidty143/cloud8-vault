@@ -63,7 +63,7 @@ export default function Storage() {
                   {userList.map((user, index) => (
                     <div
                       key={index}
-                      className="order-2 border-gray-200 p-4 w-full flex flex-col items-center rounded-lg shadow-md"
+                      className="order-2 border-gray-200 p-4 w-full flex flex-col items-center rounded-xl shadow-md"
                     >
                       {/* User Profile Picture */}
                       {user.photo_url && (
@@ -75,21 +75,19 @@ export default function Storage() {
                       )}
 
                       {/* User Information */}
-                      <h3 className="text-xl text-gray-800 font-semibold mb-2 text-center">
+                      <h3 className="text-xl text-gray-800 font-semibold mb-3 text-center">
                         {user.account_name}
                       </h3>
 
                       {/* Email */}
-                      <p className="text-gray-500 text-base mb-1 text-left w-full">
-                        <span className="font-semibold text-blue-500">
-                          Email:
-                        </span>{" "}
+                      <p className="text-gray-700 text-base mb-1 text-left w-full">
+                        <span className="font-semibold">Email:</span>{" "}
                         <span className="text-gray-700">{user.email}</span>
                       </p>
 
                       {/* Contact */}
-                      <p className="text-gray-500 text-base text-left w-full">
-                        <span className="font-semibold text-green-500">
+                      <p className=" text-base text-left mb-1 w-full">
+                        <span className="font-semibold text-gray-700">
                           Contact:
                         </span>{" "}
                         <span className="text-gray-700">
@@ -99,8 +97,8 @@ export default function Storage() {
 
                       {/* Gender */}
                       {user.gender && (
-                        <p className="text-gray-500 text-base text-left w-full">
-                          <span className="font-semibold text-purple-500">
+                        <p className=" text-base text-left mb-1 w-full">
+                          <span className="font-semibold text-gray-700 ">
                             Gender:
                           </span>{" "}
                           <span className="text-gray-700">{user.gender}</span>
@@ -109,11 +107,11 @@ export default function Storage() {
 
                       {/* Country */}
                       {user.country && (
-                        <p className="text-gray-500 text-base text-left w-full flex items-center">
-                          <span className="font-semibold text-indigo-500">
+                        <p className=" text-base text-left mb-1 w-full flex items-center">
+                          <span className="font-semibold text-gray-700">
                             Country:
                           </span>{" "}
-                          <span className="text-gray-700 ml-2 flex items-center">
+                          <span className=" ml-2 text-gray-700 flex items-center">
                             {user.country}
                           </span>
                         </p>
@@ -126,7 +124,7 @@ export default function Storage() {
           </div>
 
           {/* Footer */}
-          <div className="border-2 border-t-0 w-full h-[10vh]  text-gray-800 text-center flex items-center justify-center text-sm">
+          <div className="border-2 border-t-0 w-full h-[10vh]  text-gray-800 text-center font-semibold flex items-center justify-center text-md">
             @ 2025 David Ty. All Rights Reserved
           </div>
         </div>

@@ -13,6 +13,35 @@ interface UploadButtonProps {
   fetchFiles: () => void; // Function to fetch the files after upload
 }
 
+const Modal = ({
+  message,
+  onClose,
+  isError,
+}: {
+  message: string;
+  onClose: () => void;
+  isError: boolean;
+}) => (
+  <div className="fixed inset-0 flex justify-center items-center bg-gray-500 bg-opacity-50 z-50">
+    <div
+      className={`bg-white p-6 rounded-lg shadow-lg w-96 relative ${
+        isError ? "border-red-500 border" : "border-green-500 border"
+      }`}
+    >
+      <h3 className="text-xl font-semibold mb-4">
+        {isError ? "Error" : "Success"}
+      </h3>
+      <p className="mb-4">{message}</p>
+      <button
+        onClick={onClose}
+        className="px-4 py-2 bg-black text-white rounded"
+      >
+        Close
+      </button>
+    </div>
+  </div>
+);
+
 export default function UploadButton({ fetchFiles }: UploadButtonProps) {
   const [showUploadForm, setShowUploadForm] = useState(false); // State to manage overlay visibility
   const [file, setFile] = useState<File | null>(null); // State to store selected file
@@ -24,6 +53,9 @@ export default function UploadButton({ fetchFiles }: UploadButtonProps) {
     gender: "", // Add gender to the profile state
     country: "", // Add country to the profile state
   }); // State to store profile form data
+  const [error, setError] = useState<string>(""); // State for error messages
+  const [successMessage, setSuccessMessage] = useState<string>(""); // State for success message
+  const [isError, setIsError] = useState<boolean>(false); // State to handle error or success popups
   const formRef = useRef<HTMLDivElement | null>(null); // Ref for the form
 
   // Close the form when clicked outside
@@ -59,14 +91,48 @@ export default function UploadButton({ fetchFiles }: UploadButtonProps) {
     }
   };
 
-  // Handle file upload with compression (only images)
-  const handleUploadClick = async () => {
-    if (!file) {
-      alert("Please select a file to upload!");
-      return;
+  // Validate form inputs
+  const validateForm = (): boolean => {
+    const { account_name, email, contact_number, gender, country } = profile;
+
+    // Check for empty fields
+    if (!account_name || !email || !contact_number || !gender || !country) {
+      setError("Please fill in all the fields.");
+      setIsError(true);
+      return false;
     }
 
-    if (file.type.startsWith("image/")) {
+    // Check if email is valid
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    if (!emailRegex.test(email)) {
+      setError("Please enter a valid email address.");
+      setIsError(true);
+      return false;
+    }
+
+    // Check if contact number contains only digits
+    const phoneRegex = /^[0-9]+$/;
+    if (!phoneRegex.test(contact_number)) {
+      setError("Contact number should contain only digits.");
+      setIsError(true);
+      return false;
+    }
+
+    // Check if file is selected and valid
+    if (!file) {
+      setError("Please select a valid image file.");
+      setIsError(true);
+      return false;
+    }
+
+    return true;
+  };
+
+  // Handle file upload with compression (only images)
+  const handleUploadClick = async () => {
+    if (!validateForm()) return; // Validate before proceeding
+
+    if (file && file.type.startsWith("image/")) {
       new Compressor(file, {
         quality: 0.6,
         success: async (result) => {
@@ -84,7 +150,8 @@ export default function UploadButton({ fetchFiles }: UploadButtonProps) {
         },
       });
     } else {
-      alert("Please select a valid image file.");
+      setError("Please select a valid image file.");
+      setIsError(true);
     }
   };
 
@@ -104,8 +171,8 @@ export default function UploadButton({ fetchFiles }: UploadButtonProps) {
       });
 
     if (listError) {
-      alert("Error checking for existing file: " + listError.message);
-      console.error("Error checking file existence:", listError);
+      setError("Error checking for existing file: " + listError.message);
+      setIsError(true);
       setLoading(false);
       return null;
     }
@@ -117,8 +184,8 @@ export default function UploadButton({ fetchFiles }: UploadButtonProps) {
         .remove([`profile_photos/${fileName}`]);
 
       if (deleteError) {
-        alert("Error removing existing file: " + deleteError.message);
-        console.error("Error deleting file:", deleteError);
+        setError("Error removing existing file: " + deleteError.message);
+        setIsError(true);
         setLoading(false);
         return null;
       }
@@ -137,8 +204,8 @@ export default function UploadButton({ fetchFiles }: UploadButtonProps) {
     setLoading(false); // Set loading to false once the upload is complete
 
     if (error) {
-      alert("Error uploading file to Supabase: " + error.message);
-      console.error("Upload error:", error);
+      setError("Error uploading file to Supabase: " + error.message);
+      setIsError(true);
       return null;
     }
 
@@ -163,8 +230,8 @@ export default function UploadButton({ fetchFiles }: UploadButtonProps) {
       !country ||
       !filePath
     ) {
-      alert("Please complete the profile information.");
-      console.error("Incomplete profile data.");
+      setError("Please complete the profile information.");
+      setIsError(true);
       return;
     }
 
@@ -185,11 +252,14 @@ export default function UploadButton({ fetchFiles }: UploadButtonProps) {
     );
 
     if (error) {
-      alert("Error saving profile information: " + error.message);
-      console.error("Error saving profile data:", error);
+      setError("Error saving profile information: " + error.message);
+      setIsError(true);
     } else {
-      alert("Profile information saved successfully!");
-      console.log("Profile data saved:", data);
+      setSuccessMessage("Profile Uploaded!");
+      setIsError(false);
+      setTimeout(() => {
+        window.location.reload(); // Refresh the page after success
+      }, 1500); // Delay the page refresh by 1.5 seconds to let the success message appear
     }
   };
 
@@ -199,6 +269,8 @@ export default function UploadButton({ fetchFiles }: UploadButtonProps) {
 
   const handleCloseUploadForm = () => {
     setShowUploadForm(false);
+    setError(""); // Clear any previous errors when closing the form
+    setSuccessMessage(""); // Clear success message when closing
   };
 
   return (
@@ -224,7 +296,16 @@ export default function UploadButton({ fetchFiles }: UploadButtonProps) {
             >
               &times;
             </button>
-            <h3 className="text-lg font-bold mb-4">Add User Information</h3>
+            <h3 className="text-xl font-semibold mb-4">Add User Information</h3>
+
+            {/* Display error or success message */}
+            {(error || successMessage) && (
+              <Modal
+                message={error || successMessage}
+                onClose={handleCloseUploadForm}
+                isError={isError}
+              />
+            )}
 
             {/* Profile Info Fields */}
             <input
@@ -286,7 +367,7 @@ export default function UploadButton({ fetchFiles }: UploadButtonProps) {
             </select>
 
             {/* Upload Photo Section */}
-            <h4 className="text-md font-bold mt-4 mb-2">
+            <h4 className="text-md font-semibold mt-4 mb-2">
               Upload Profile Photo
             </h4>
             <input
@@ -297,7 +378,7 @@ export default function UploadButton({ fetchFiles }: UploadButtonProps) {
             />
             <button
               onClick={handleUploadClick}
-              className="w-full py-2 bg-blue-500 text-white rounded"
+              className="w-full py-2 bg-black text-white rounded"
               disabled={loading} // Disable button while uploading
             >
               {loading ? "Uploading..." : "Upload Photo"}

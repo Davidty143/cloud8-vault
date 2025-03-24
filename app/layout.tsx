@@ -45,9 +45,9 @@ export default function RootLayout({
                   "w-[1250px]",
                   "2xl:w-[80%]",
                   "flex",
+                  "bg-gray-100",
                   "border-2",
                   "border-t-0",
-
                   "justify-between", // Space out the children in the flex container
                   "items-center" // Center the items vertically
                 )}
@@ -65,11 +65,11 @@ export default function RootLayout({
                     "font-semibold",
                     "items-center",
                     "justify-start",
-                    "ml-4",
-                    "text-lg"
+                    "ml-8",
+                    "text-xl"
                   )}
                 >
-                  Cloud8 Vault
+                  Cloud8 User Information
                 </div>
 
                 {/* Login Section */}
