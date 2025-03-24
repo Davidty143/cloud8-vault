@@ -68,7 +68,7 @@ export default function Storage() {
                       {/* User Profile Picture */}
                       {user.photo_url && (
                         <img
-                          src={`https://kcgrjcnnvhrxakvhrnhl.supabase.co/storage/v1/object/public/storage/${user.photo_url}`}
+                          src={`https://qaibenssloborrcwhhnb.supabase.co/storage/v1/object/public/storage/${user.photo_url}`}
                           alt={user.account_name}
                           className="w-60 h-60 object-cover rounded-xl mb-4"
                         />
